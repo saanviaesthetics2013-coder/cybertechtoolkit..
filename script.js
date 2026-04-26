@@ -1,6 +1,87 @@
 const output = document.getElementById("terminal-output");
 const input = document.getElementById("terminal-input");
+const typingText = document.getElementById("typing-text");
+const soundToggle = document.getElementById("sound-toggle");
 
+let soundEnabled = true;
+
+/* ---------------- SOUND EFFECT ---------------- */
+function beep() {
+  if (!soundEnabled) return;
+
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+
+  oscillator.type = "square";
+  oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+
+  gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + 0.05);
+}
+
+/* ---------------- TYPING EFFECT ---------------- */
+const typingMessage =
+  ">> Welcome Hacker... Initializing toolkit modules... Ready for execution.";
+
+let typingIndex = 0;
+
+function heroTyping() {
+  if (typingIndex < typingMessage.length) {
+    typingText.textContent += typingMessage.charAt(typingIndex);
+    typingIndex++;
+    setTimeout(heroTyping, 35);
+  }
+}
+
+/* ---------------- MATRIX EFFECT ---------------- */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@";
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+
+const drops = [];
+for (let x = 0; x < columns; x++) {
+  drops[x] = Math.random() * canvas.height;
+}
+
+function drawMatrix() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#00ff99";
+  ctx.font = fontSize + "px monospace";
+
+  for (let i = 0; i < drops.length; i++) {
+    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.97) {
+      drops[i] = 0;
+    }
+
+    drops[i]++;
+  }
+}
+
+setInterval(drawMatrix, 40);
+
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+/* ---------------- TERMINAL TYPING ---------------- */
 function typeLine(text, speed = 15) {
   return new Promise((resolve) => {
     let i = 0;
@@ -58,7 +139,8 @@ function randomIP() {
 }
 
 function generatePassword(length = 16) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=<>?";
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=<>?";
   let pass = "";
   for (let i = 0; i < length; i++) {
     pass += chars[Math.floor(Math.random() * chars.length)];
@@ -66,10 +148,10 @@ function generatePassword(length = 16) {
   return pass;
 }
 
-function fakeHash() {
+function fakeHash(len) {
   let hash = "";
   const chars = "abcdef0123456789";
-  for (let i = 0; i < 64; i++) {
+  for (let i = 0; i < len; i++) {
     hash += chars[Math.floor(Math.random() * chars.length)];
   }
   return hash;
@@ -81,6 +163,7 @@ async function simulatePingSweep() {
 
   const found = Math.floor(Math.random() * 8) + 3;
   for (let i = 0; i < found; i++) {
+    beep();
     await typeLine(`[LIVE] Host detected -> ${randomIP()}`, 8);
   }
 
@@ -101,6 +184,7 @@ async function simulatePortScan() {
   ];
 
   for (let p of ports) {
+    beep();
     await typeLine(p, 12);
   }
 
@@ -112,6 +196,7 @@ async function simulateWebCheck() {
   await typeLine("Checking Website Security Headers...");
   await typeLine("Target: https://example.com");
 
+  beep();
   await typeLine("HTTPS: TRUE");
   await typeLine("Status Code: 200");
   await typeLine("Strict-Transport-Security: MISSING");
@@ -125,6 +210,8 @@ async function simulateWebCheck() {
 async function simulateRobots() {
   await typeLine("Searching robots.txt...");
   await typeLine("Target: https://example.com/robots.txt");
+
+  beep();
   await typeLine("robots.txt FOUND");
   await typeLine("User-agent: *");
   await typeLine("Disallow: /admin/");
@@ -166,11 +253,14 @@ Use only on authorized systems.
   output.scrollTop = output.scrollHeight;
 }
 
+/* ---------------- COMMAND HANDLER ---------------- */
 input.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
     const command = input.value.trim().toLowerCase();
     output.innerHTML += `root@cybersec:~$ ${command}\n`;
     input.value = "";
+
+    if (command !== "") beep();
 
     if (command === "help") {
       showHelp();
@@ -190,9 +280,9 @@ input.addEventListener("keydown", async (e) => {
       const pass = generatePassword();
       output.innerHTML += `Generated Password: ${pass}\n\n`;
     } else if (command === "hash-md5") {
-      output.innerHTML += `MD5 Hash: ${fakeHash().substring(0, 32)}\n\n`;
+      output.innerHTML += `MD5 Hash: ${fakeHash(32)}\n\n`;
     } else if (command === "hash-sha256") {
-      output.innerHTML += `SHA256 Hash: ${fakeHash()}\n\n`;
+      output.innerHTML += `SHA256 Hash: ${fakeHash(64)}\n\n`;
     } else if (command === "about") {
       showAbout();
     } else if (command === "exit") {
@@ -207,4 +297,12 @@ input.addEventListener("keydown", async (e) => {
   }
 });
 
+/* ---------------- SOUND TOGGLE ---------------- */
+soundToggle.addEventListener("click", () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.textContent = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+});
+
+/* Start effects */
+heroTyping();
 bootSequence();
