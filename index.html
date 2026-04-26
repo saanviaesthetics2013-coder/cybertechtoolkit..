@@ -8,8 +8,8 @@
 </head>
 <body>
 
-  <div class="bg-grid"></div>
-  <div class="glow"></div>
+  <!-- Matrix Canvas -->
+  <canvas id="matrix"></canvas>
 
   <header class="topbar">
     <div class="logo">⚡ CyberSec Toolkit</div>
@@ -23,13 +23,13 @@
 
   <section class="hero">
     <h1 class="title glitch" data-text="CyberSec Toolkit">CyberSec Toolkit</h1>
-    <p class="subtitle">
-      A hacker-style Python cybersecurity toolkit for ethical hacking and defensive testing.
-    </p>
+    <p class="subtitle typing" id="typing-text"></p>
 
     <div class="hero-buttons">
       <a class="btn primary" href="#terminal">Launch Terminal</a>
-      <a class="btn secondary" href="https://github.com/" target="_blank">View Repository</a>
+      <a class="btn secondary" href="https://github.com/YOUR_USERNAME/CyberSec-Toolkit" target="_blank">
+        View Repository
+      </a>
     </div>
 
     <div class="stats">
@@ -64,30 +64,37 @@
 
       <div class="feature-card">
         <h3>🌐 Web Security Check</h3>
-        <p>Check HTTP security headers and HTTPS availability.</p>
+        <p>Analyze HTTP security headers and HTTPS status.</p>
       </div>
 
       <div class="feature-card">
         <h3>🤖 robots.txt Finder</h3>
-        <p>Discover robots.txt rules exposed by websites.</p>
+        <p>Detect robots.txt rules and exposed paths.</p>
       </div>
 
       <div class="feature-card">
         <h3>🔑 Password Generator</h3>
-        <p>Generate strong random passwords instantly.</p>
+        <p>Generate strong passwords instantly.</p>
       </div>
 
       <div class="feature-card">
         <h3>🧾 Hash Generator</h3>
-        <p>Create MD5 and SHA256 hashes for security learning.</p>
+        <p>Create MD5 and SHA256 hashes for learning.</p>
       </div>
     </div>
   </section>
 
   <section id="terminal" class="section terminal-section">
-    <h2 class="section-title">Interactive Hacker Terminal</h2>
+    <div class="terminal-header">
+      <h2 class="section-title">Interactive Hacker Terminal</h2>
+
+      <button id="sound-toggle" class="sound-btn">
+        🔊 Sound: ON
+      </button>
+    </div>
+
     <p class="section-subtitle">
-      This is a browser demo simulation of your toolkit interface.
+      Browser simulation of the toolkit interface (safe demo).
     </p>
 
     <div class="terminal">
@@ -110,7 +117,7 @@
   <section id="download" class="section">
     <h2 class="section-title">Download & Run Locally</h2>
     <p class="section-subtitle">
-      To run the real toolkit, download from GitHub and execute in terminal.
+      The real toolkit runs in Python terminal.
     </p>
 
     <div class="code-box">
@@ -126,9 +133,9 @@
   <section id="legal" class="section legal-section">
     <h2 class="section-title">Legal Disclaimer</h2>
     <p class="legal-text">
-      This toolkit is for educational purposes only.  
-      Only scan systems you own or have explicit permission to test.
-      Unauthorized scanning is illegal.
+      This toolkit is for educational use only.  
+      Scan only systems you own or have permission to test.
+      Unauthorized hacking is illegal.
     </p>
   </section>
 
