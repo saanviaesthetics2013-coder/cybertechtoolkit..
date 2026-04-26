@@ -3,6 +3,10 @@
 // Matrix + Typing + Fake Login + Terminal Simulation + Sound Effects
 // ============================
 
+// ---------------- GLOBAL SETTINGS ----------------
+let soundEnabled = true;
+
+// ---------------- ELEMENTS ----------------
 const output = document.getElementById("terminal-output");
 const input = document.getElementById("terminal-input");
 const typingText = document.getElementById("typing-text");
@@ -12,8 +16,6 @@ const soundToggle = document.getElementById("sound-toggle");
 const loginOverlay = document.getElementById("login-overlay");
 const loginBtn = document.getElementById("login-btn");
 const loginStatus = document.getElementById("login-status");
-
-let soundEnabled = true;
 
 // ---------------- SOUND EFFECT ----------------
 function beep() {
@@ -25,7 +27,6 @@ function beep() {
 
   oscillator.type = "square";
   oscillator.frequency.setValueAtTime(850, ctx.currentTime);
-
   gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
 
   oscillator.connect(gainNode);
@@ -58,12 +59,18 @@ canvas.height = window.innerHeight;
 
 const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@";
 const fontSize = 16;
-let columns = Math.floor(canvas.width / fontSize);
 
+let columns = Math.floor(canvas.width / fontSize);
 let drops = [];
-for (let x = 0; x < columns; x++) {
-  drops[x] = Math.random() * canvas.height;
+
+function resetDrops() {
+  drops = [];
+  for (let x = 0; x < columns; x++) {
+    drops[x] = Math.random() * canvas.height;
+  }
 }
+
+resetDrops();
 
 function drawMatrix() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
@@ -89,19 +96,15 @@ setInterval(drawMatrix, 40);
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-
   columns = Math.floor(canvas.width / fontSize);
-  drops = [];
-
-  for (let x = 0; x < columns; x++) {
-    drops[x] = Math.random() * canvas.height;
-  }
+  resetDrops();
 });
 
 // ---------------- TERMINAL TYPING ----------------
 function typeLine(text, speed = 15) {
   return new Promise((resolve) => {
     let i = 0;
+
     const interval = setInterval(() => {
       output.innerHTML += text.charAt(i);
       output.scrollTop = output.scrollHeight;
@@ -187,6 +190,7 @@ async function simulatePingSweep() {
   await typeLine("Scanning network: 192.168.1.0/24");
 
   const found = Math.floor(Math.random() * 8) + 3;
+
   for (let i = 0; i < found; i++) {
     beep();
     await typeLine(`[LIVE] Host detected -> ${randomIP()}`, 8);
@@ -283,6 +287,7 @@ Use only on authorized systems.
 input.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
     const command = input.value.trim().toLowerCase();
+
     output.innerHTML += `root@cybersec:~$ ${command}\n`;
     input.value = "";
 
@@ -353,6 +358,13 @@ loginBtn.addEventListener("click", () => {
   } else {
     loginStatus.style.color = "#ff4b4b";
     loginStatus.textContent = "ACCESS DENIED";
+  }
+});
+
+// Allow Enter key login
+document.getElementById("pass").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    loginBtn.click();
   }
 });
 
