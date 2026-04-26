@@ -1,11 +1,21 @@
+// ============================
+// CyberSec Toolkit Website JS
+// Matrix + Typing + Fake Login + Terminal Simulation + Sound Effects
+// ============================
+
 const output = document.getElementById("terminal-output");
 const input = document.getElementById("terminal-input");
 const typingText = document.getElementById("typing-text");
 const soundToggle = document.getElementById("sound-toggle");
 
+// Login elements
+const loginOverlay = document.getElementById("login-overlay");
+const loginBtn = document.getElementById("login-btn");
+const loginStatus = document.getElementById("login-status");
+
 let soundEnabled = true;
 
-/* ---------------- SOUND EFFECT ---------------- */
+// ---------------- SOUND EFFECT ----------------
 function beep() {
   if (!soundEnabled) return;
 
@@ -14,7 +24,7 @@ function beep() {
   const gainNode = ctx.createGain();
 
   oscillator.type = "square";
-  oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+  oscillator.frequency.setValueAtTime(850, ctx.currentTime);
 
   gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
 
@@ -25,9 +35,9 @@ function beep() {
   oscillator.stop(ctx.currentTime + 0.05);
 }
 
-/* ---------------- TYPING EFFECT ---------------- */
+// ---------------- HERO TYPING EFFECT ----------------
 const typingMessage =
-  ">> Welcome Hacker... Initializing toolkit modules... Ready for execution.";
+  ">> Welcome Hacker... Initializing toolkit modules... Terminal access required...";
 
 let typingIndex = 0;
 
@@ -39,7 +49,7 @@ function heroTyping() {
   }
 }
 
-/* ---------------- MATRIX EFFECT ---------------- */
+// ---------------- MATRIX EFFECT ----------------
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
@@ -48,9 +58,9 @@ canvas.height = window.innerHeight;
 
 const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@";
 const fontSize = 16;
-const columns = canvas.width / fontSize;
+let columns = Math.floor(canvas.width / fontSize);
 
-const drops = [];
+let drops = [];
 for (let x = 0; x < columns; x++) {
   drops[x] = Math.random() * canvas.height;
 }
@@ -79,9 +89,16 @@ setInterval(drawMatrix, 40);
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+
+  columns = Math.floor(canvas.width / fontSize);
+  drops = [];
+
+  for (let x = 0; x < columns; x++) {
+    drops[x] = Math.random() * canvas.height;
+  }
 });
 
-/* ---------------- TERMINAL TYPING ---------------- */
+// ---------------- TERMINAL TYPING ----------------
 function typeLine(text, speed = 15) {
   return new Promise((resolve) => {
     let i = 0;
@@ -99,6 +116,7 @@ function typeLine(text, speed = 15) {
   });
 }
 
+// ---------------- BOOT SEQUENCE ----------------
 async function bootSequence() {
   output.innerHTML = "";
   await typeLine("Initializing CyberSec Toolkit v1.0.0...");
@@ -114,6 +132,7 @@ async function bootSequence() {
   await typeLine("------------------------------------------");
 }
 
+// ---------------- HELP MENU ----------------
 function showHelp() {
   output.innerHTML += `
 Available Commands:
@@ -134,6 +153,7 @@ Available Commands:
   output.scrollTop = output.scrollHeight;
 }
 
+// ---------------- UTILITIES ----------------
 function randomIP() {
   return `192.168.1.${Math.floor(Math.random() * 254) + 1}`;
 }
@@ -142,21 +162,26 @@ function generatePassword(length = 16) {
   const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=<>?";
   let pass = "";
+
   for (let i = 0; i < length; i++) {
     pass += chars[Math.floor(Math.random() * chars.length)];
   }
+
   return pass;
 }
 
 function fakeHash(len) {
   let hash = "";
   const chars = "abcdef0123456789";
+
   for (let i = 0; i < len; i++) {
     hash += chars[Math.floor(Math.random() * chars.length)];
   }
+
   return hash;
 }
 
+// ---------------- SIMULATIONS ----------------
 async function simulatePingSweep() {
   await typeLine("Starting Ping Sweep...");
   await typeLine("Scanning network: 192.168.1.0/24");
@@ -221,6 +246,7 @@ async function simulateRobots() {
   await typeLine("Report saved: reports/robots_demo.txt");
 }
 
+// ---------------- TERMINAL OUTPUT COMMANDS ----------------
 function showBanner() {
   output.innerHTML += `
  ██████╗██╗   ██╗██████╗ ███████╗███████╗ ██████╗
@@ -253,7 +279,7 @@ Use only on authorized systems.
   output.scrollTop = output.scrollHeight;
 }
 
-/* ---------------- COMMAND HANDLER ---------------- */
+// ---------------- TERMINAL COMMAND HANDLER ----------------
 input.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
     const command = input.value.trim().toLowerCase();
@@ -297,12 +323,38 @@ input.addEventListener("keydown", async (e) => {
   }
 });
 
-/* ---------------- SOUND TOGGLE ---------------- */
+// ---------------- SOUND TOGGLE ----------------
 soundToggle.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
   soundToggle.textContent = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
 });
 
-/* Start effects */
+// ---------------- FAKE LOGIN SYSTEM ----------------
+loginBtn.addEventListener("click", () => {
+  const username = document.getElementById("user").value.trim();
+  const password = document.getElementById("pass").value.trim();
+
+  beep();
+
+  if (username === "root" && password === "cybersec") {
+    loginStatus.style.color = "#00ff99";
+    loginStatus.textContent = "ACCESS GRANTED... LOADING TERMINAL";
+
+    setTimeout(() => {
+      loginOverlay.classList.add("fade-out");
+
+      setTimeout(() => {
+        loginOverlay.style.display = "none";
+        bootSequence();
+      }, 1000);
+
+    }, 900);
+
+  } else {
+    loginStatus.style.color = "#ff4b4b";
+    loginStatus.textContent = "ACCESS DENIED";
+  }
+});
+
+// ---------------- START EFFECTS ----------------
 heroTyping();
-bootSequence();
