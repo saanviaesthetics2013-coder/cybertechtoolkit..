@@ -1,0 +1,8 @@
+
+---
+
+# ⭐ IMPORTANT: How people will run it from GitHub
+They will do:
+
+```bash
+python -m src.main
